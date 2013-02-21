@@ -1,5 +1,26 @@
 <?php
 
+// user Resource
+Route::get('/', array('as'=>'home', 'uses'=>'nodes@graph'));
+Route::get('graph', array('as' => 'graph', 'uses' => 'nodes@graph'));
+//Route::get('users', array('as' => 'users', 'uses' => 'users@index'));
+//Route::get('users/(:any)', array('as' => 'user', 'uses' => 'users@show'));
+Route::get('register', array('as' => 'register', 'uses' => 'users@new'));
+Route::get('login', array('as'=>'login', 'uses'=>'users@login'));
+Route::get('logout', array('as'=>'logout', 'uses'=>'users@logout'));
+
+//Route::get('users/(:any)/edit', array('as' => 'edit_user', 'uses' => 'users@edit'));
+//Route::post('users', 'users@create');
+//Route::put('users/(:any)', 'users@update');
+//Route::delete('users/(:any)', 'users@destroy');
+
+//Route::post('graph', array('before'=>'csrf', 'uses' => 'nodes@nodes'));
+Route::post('register', array('before'=>'csrf', 'uses'=>'users@create'));
+Route::post('graph', array('before'=>'csrf', 'uses'=>'nodes@add'));
+Route::post('login', array('before'=>'csrf', 'uses'=>'users@login'));
+Route::post('add', array('before'=>'csrf', 'uses'=>'nodes@add'));
+
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -32,10 +53,10 @@
 |
 */
 
-Route::get('/', function()
-{
-	return View::make('home.index');
-});
+// Route::get('/', function()
+// {
+// 	return View::make('home.index');
+// });
 
 /*
 |--------------------------------------------------------------------------

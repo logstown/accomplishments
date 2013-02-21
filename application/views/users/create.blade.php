@@ -1,0 +1,1 @@
+This is the /Users/loganjoecks/Sites/accomplishments/application/views/user/create.blade.php view
