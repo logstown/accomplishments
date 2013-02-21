@@ -238,57 +238,65 @@
                         if(!dragged.node.data.expanded){
                             if(dragged.node.data.type !== 'noun'){
                                 dragged.node.data.expanded = true
+                                var nodes = globalData[dragged.node.name]['nodes'];
+                                var edges = globalData[dragged.node.name]['edges'];
 
-                                var branch = globalData[dragged.node.name];
-                                for (var i in branch) {
-
-                                  particleSystem.addNode(branch[i].node.name, branch[i].node.data)
-
-
-                                  for (var k =0; k < branch[i].from.from.length; k++) {
-                                    if (branch[i].from.from[k] !== undefined) 
-                                      particleSystem.addEdge(branch[i].from.from[k].source.name, branch[i].from.from[k].target.name, branch[i].from.from[k].data)
-                                  }
-
-                                  for (var k =0; k < branch[i].from.to.length; k++) {
-                                     if (branch[i].from.to[k] !== undefined) 
-                                      particleSystem.addEdge(branch[i].from.to[k].source.name, branch[i].from.to[k].target.name, branch[i].from.to[k].data)
-                                  }
-
-                                  for (var k in branch[i].to) {
-                                    if (branch[i].to[k][0] !== undefined) particleSystem.addEdge(branch[i].to[k][0].source.name, branch[i].to[k][0].target.name, branch[i].to[k][0].data)
-                                  }
-
+                                for (var i in nodes) {
+                                  particleSystem.addNode(nodes[i].name, nodes[i].data)
                                 }
-                                
+
+                                for (var i in edges) {
+                                  if (edges[i] !== undefined)
+                                    particleSystem.addEdge(edges[i].source.name, edges[i].target.name, edges[i].data)
+                                }
                             }
                         }
                         else{
                             dragged.node.data.expanded = false;
-                            globalData[dragged.node.name] = [];
+
+                            var nodes = [];
+                            var edges = [];
 
                             if(dragged.node.data.type == 'category'){
                                 particleSystem.prune(function(node, from, to){
                                     if(node.name.substring(0, dragged.node.data.label.length) === dragged.node.data.label){ 
                                         
-                                        globalData[dragged.node.name][node.name] = {node: node, from: from, to: to};
+                                        console.log(from)
+
+                                        nodes[node.name] = node;
+                                        for (var i =0; i<from.from.length; i++) {
+                                          edges[from.from[i]._id] = from.from[i];
+                                        }
+
+                                        for (var i =0; i < from.to.length; i++) {
+                                          edges[from.to[i]._id] = from.to[i];
+                                        } 
 
                                         return true;
                                     }
                                 })
 
                             }else if(dragged.node.data.type == 'verb'){
-                                var edges = particleSystem.getEdgesFrom(dragged.node)
-                                for (var i = 0; i < edges.length; i++){
-                                    var edge = edges[i]
+                                var draggedEdges = particleSystem.getEdgesFrom(dragged.node)
+                                for (var i = 0; i < draggedEdges.length; i++){
+                                    var edge = draggedEdges[i]
                                     if(particleSystem.getEdgesTo(edge.target).length == 1){
+                                        nodes[edge.target.name] = edge.target;
+                                        edges[edge._id] = edge;
                                         particleSystem.pruneNode(edge.target)
                                     }
                                     else{
+                                        console.log(edge)
+                                        edges[edge._id] = edge;
                                         particleSystem.pruneEdge(edge)
                                     }
                                 }
                             }
+
+                             globalData[dragged.node.name] = [];
+
+                             globalData[dragged.node.name]['nodes'] = nodes;                                   
+                             globalData[dragged.node.name]['edges'] = edges; 
                         }
                     }
                 }
