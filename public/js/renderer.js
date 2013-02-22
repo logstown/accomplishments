@@ -68,7 +68,7 @@
           }
           
           switch(node.data.type){
-              case 'verb':
+              case 'category':
                   gfx.oval(pt.x-w/2+off, pt.y-w/2+off, w,w, {fill:'black'})
                   gfx.oval(pt.x-w/2, pt.y-w/2, w,w, {fill:ctx.fillStyle})
                   nodeBoxes[node.name] = [pt.x-w/2, pt.y-w/2, w+off,w+off]

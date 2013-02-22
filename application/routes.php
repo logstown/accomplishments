@@ -1,7 +1,7 @@
 <?php
 
 // user Resource
-Route::get('/', array('as'=>'home', 'uses'=>'nodes@graph'));
+Route::get('/', array('as'=>'home', 'uses'=>'home@things'));
 Route::get('graph', array('as' => 'graph', 'uses' => 'nodes@graph'));
 //Route::get('users', array('as' => 'users', 'uses' => 'users@index'));
 //Route::get('users/(:any)', array('as' => 'user', 'uses' => 'users@show'));

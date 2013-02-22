@@ -8,8 +8,11 @@
 	{{ HTML::style('css/bootstrap.css') }}
 	{{ HTML::script('https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js') }}
 	<style type="text/css">
-	body {
-
+	form {
+		margin-bottom: 0;
+	}
+	h2 {
+		margin: 0;
 	}
 	</style>
 
@@ -38,18 +41,20 @@
 				{{ Form::text('keyword', '', array('id'=>'keyword', 'placeholder' => 'Search', 'class' => 'search-query')) }}
 
 				{{ Form::close() }} </li>
+				<li>
+					
+				</li>
 			</ul>
+			<p id="message" class="navbar-text pull-right">
+					@if(Session::has('message'))
+						{{ Session::get('message') }}
+					@endif
+			</p>
 			</div><!-- end searchbar -->
 		</div>
 		</div><!-- end nav -->
 
 		<div id="content">
-			<p id="message">
-			@if(Session::has('message'))
-				{{ Session::get('message') }}
-			@endif
-			</p>
-
 			@yield('content')
 		</div><!-- end content -->
 

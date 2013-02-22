@@ -10,7 +10,6 @@ class Nodes_Controller extends Base_Controller {
 
 	public function get_graph()
     {
-    	Log::write('info','hmm');
     	return View::make('nodes.your_nodes')
     		->with('title', 'Accomplishments - Your Graph')
     		->with('username', Auth::user()->username)

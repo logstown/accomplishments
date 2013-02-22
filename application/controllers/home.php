@@ -30,9 +30,42 @@ class Home_Controller extends Base_Controller {
 	|
 	*/
 
-	public function action_index()
+	public function action_things()
 	{
-		return View::make('home.index');
+		$connections = DB::table('noun_verb')->order_by('created_at', 'DESC')->take(5)->get();
+
+		$sentences = array();
+		foreach ($connections as $connection) {
+			$noun = Noun::find($connection->noun_id);
+			$verb = Verb::find($connection->verb_id);
+			$category = $verb->category;
+			$user = $category->user;
+
+			$sentences[$connection->id] = $noun->word . ' is a ' . $category->word . ' that ' . $user->username . ' has ' . $verb->word . '.';
+		}
+
+		$categories = DB::query('select word, count(*) as word_count 
+								from categories 
+								group by word 
+								order by word_count desc 
+								limit 3');
+		$verbs = DB::query('select word, count(*) as word_count 
+							from verbs 
+							group by word 
+							order by word_count desc 
+							limit 3');
+		$nouns = DB::query('select word, count(*) as word_count 
+							from nouns 
+							group by word 
+							order by word_count desc 
+							limit 3');
+
+		return View::make('home.index')
+			->with('title', 'Accomplishments - Home')
+			->with('sentences', $sentences)
+			->with('categories', $categories)
+			->with('verbs', $verbs)
+			->with('nouns', $nouns);
 	}
 
 }
