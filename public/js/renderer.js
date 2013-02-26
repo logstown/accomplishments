@@ -4,6 +4,8 @@
     var dom = $(canvas)
     var canvas = dom.get(0)
     var ctx = canvas.getContext("2d");
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
     var gfx = arbor.Graphics(canvas)
     var particleSystem = null
 
@@ -36,18 +38,22 @@
           }else{
             label = null
           }
-            
+
+          var collapse;
+
           switch(node.data.type){
               case 'category':
                   ctx.fillStyle = 'orange';
-                  label = label.pluralize()
+                  label = label.pluralize();
+                  collapse = 'red';
                   break;
               case 'verb':
                   ctx.fillStyle = 'red';
+                  collapse = 'blue';
                   break;
               case 'noun':
                   if(particleSystem.getEdgesTo(node).length > 1){
-                      ctx.fillStyle = 'purple'
+                      ctx.fillStyle = 'blue'
                   }else{
                       ctx.fillStyle = 'blue'
                   }
@@ -66,15 +72,17 @@
               textColor = ctx.fillStyle
               ctx.fillStyle = "white"
           }
+
+          var shadow = node.data.expanded ? 'black' : collapse;
           
           switch(node.data.type){
               case 'category':
-                  gfx.oval(pt.x-w/2+off, pt.y-w/2+off, w,w, {fill:'black'})
+                  gfx.oval(pt.x-w/2+off, pt.y-w/2+off, w,w, {fill:shadow})
                   gfx.oval(pt.x-w/2, pt.y-w/2, w,w, {fill:ctx.fillStyle})
                   nodeBoxes[node.name] = [pt.x-w/2, pt.y-w/2, w+off,w+off]
                   break;
               default:
-                  gfx.rect(pt.x-w/2+off, pt.y-10+off, w,20, 4, {fill:'black'})
+                  gfx.rect(pt.x-w/2+off, pt.y-10+off, w,20, 4, {fill:shadow})
                   gfx.rect(pt.x-w/2, pt.y-10, w,20, 4, {fill:ctx.fillStyle})
                   nodeBoxes[node.name] = [pt.x-w/2, pt.y-11, w+off, 22+off]
           }
@@ -98,17 +106,17 @@
           switch(edge.data.type){
               case 'category':
                   color = 'orange'
-                  weight = 2
+                  weight = 3
                   break;
               case 'verb':
-                  color = 'red'
+                  color = 'orange'
                   weight = 2
                   break;
               case 'noun':
-                  color = 'blue'
+                  color = 'red'
                   var edges = particleSystem.getEdgesTo(edge.target)
                   if(edges.length > 1) color = 'purple'
-                  weight = 2
+                  weight = 1
                   break;
               default:
                   color = 'green'
@@ -238,8 +246,8 @@
                         if(!dragged.node.data.expanded){
                             if(dragged.node.data.type !== 'noun'){
                                 dragged.node.data.expanded = true
-                                var nodes = globalData[dragged.node.name]['nodes'];
-                                var edges = globalData[dragged.node.name]['edges'];
+                                var nodes = globalData['nodes'][dragged.node.name];
+                                var edges = globalData['edges'][dragged.node.name];
 
                                 for (var i in nodes) {
                                   particleSystem.addNode(nodes[i].name, nodes[i].data)
@@ -261,8 +269,6 @@
                                 particleSystem.prune(function(node, from, to){
                                     if(node.name.substring(0, dragged.node.data.label.length) === dragged.node.data.label){ 
                                         
-                                        console.log(from)
-
                                         nodes[node.name] = node;
                                         for (var i =0; i<from.from.length; i++) {
                                           edges[from.from[i]._id] = from.from[i];
@@ -280,23 +286,21 @@
                                 var draggedEdges = particleSystem.getEdgesFrom(dragged.node)
                                 for (var i = 0; i < draggedEdges.length; i++){
                                     var edge = draggedEdges[i]
+                                    nodes[edge.target.name] = edge.target;
+                                    edges[edge._id] = edge;
+
                                     if(particleSystem.getEdgesTo(edge.target).length == 1){
-                                        nodes[edge.target.name] = edge.target;
-                                        edges[edge._id] = edge;
                                         particleSystem.pruneNode(edge.target)
                                     }
                                     else{
-                                        console.log(edge)
-                                        edges[edge._id] = edge;
                                         particleSystem.pruneEdge(edge)
                                     }
+
                                 }
                             }
 
-                             globalData[dragged.node.name] = [];
-
-                             globalData[dragged.node.name]['nodes'] = nodes;                                   
-                             globalData[dragged.node.name]['edges'] = edges; 
+                             globalData['nodes'][dragged.node.name] = nodes;                                   
+                             globalData['edges'][dragged.node.name] = edges; 
                         }
                     }
                 }

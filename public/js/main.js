@@ -1,9 +1,10 @@
 $(document).ready(function(){
-    var sys = arbor.ParticleSystem(1000, 600, 0.5) // create the system with sensible repulsion/stiffness/friction
+    var sys = arbor.ParticleSystem() // originally 1000, 600, 0.5
     sys.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
 
     sys.graft(graph)
+    //sys.pruneNode(user)
 
     $(":submit").click(function(e){
         e.preventDefault();
@@ -29,6 +30,36 @@ $(document).ready(function(){
             $(":text").val('');
 
         });
+    });
+
+    $("#collapse").click(function () {
+      console.log(user);
+        sys.prune( function(node, from, to) {
+            if (node.data.type === 'verb' || node.data.type === 'noun') {
+              
+                var under = node.name.indexOf("_");
+                var cat = node.name.substring(0, under);
+                var parent = user + '_' + cat;
+
+                if (!globalData['nodes'][parent])
+                   globalData['nodes'][parent] = [];
+
+                if (!globalData['edges'][parent])
+                   globalData['edges'][parent] = [];
+                 
+                globalData['nodes'][parent][node.name] = node;
+                for (var i=0; i<from.from.length; i++) {
+                  globalData['edges'][parent][from.from[i]._id] = from.from[i];
+                }
+
+                for (var i=0; i < from.to.length; i++) {
+                  globalData['edges'][parent][from.to[i]._id] = from.to[i];
+                } 
+
+
+                return true;   
+            } 
+        })
     });
 });
 

@@ -21,7 +21,7 @@ class Users_Controller extends Base_Controller {
             ));
 
             $user = User::where_username(Input::get('username'))->first();
-            Auth::login($user);
+            Auth::login($user->id);
 
             return Redirect::to_route('home')
                 ->with('message', 'Thanks for registering. Your are now logged in!');

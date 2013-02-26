@@ -2,35 +2,13 @@
 
 class Home_Controller extends Base_Controller {
 
-	/*
-	|--------------------------------------------------------------------------
-	| The Default Controller
-	|--------------------------------------------------------------------------
-	|
-	| Instead of using RESTful routes and anonymous functions, you might wish
-	| to use controllers to organize your application API. You'll love them.
-	|
-	| This controller responds to URIs beginning with "home", and it also
-	| serves as the default controller for the application, meaning it
-	| handles requests to the root of the application.
-	|
-	| You can respond to GET requests to "/home/profile" like so:
-	|
-	|		public function action_profile()
-	|		{
-	|			return "This is your profile!";
-	|		}
-	|
-	| Any extra segments are passed to the method as parameters:
-	|
-	|		public function action_profile($id)
-	|		{
-	|			return "This is the profile for user {$id}.";
-	|		}
-	|
-	*/
+	public $restful = true;
 
-	public function action_things()
+	public function __construct() {
+		$this->filter('before', 'auth')->only(array('action_things'));
+	}
+
+	public function get_things()
 	{
 		$connections = DB::table('noun_verb')->order_by('created_at', 'DESC')->take(5)->get();
 
@@ -41,7 +19,17 @@ class Home_Controller extends Base_Controller {
 			$category = $verb->category;
 			$user = $category->user;
 
-			$sentences[$connection->id] = $noun->word . ' is a ' . $category->word . ' that ' . $user->username . ' has ' . $verb->word . '.';
+			$sentences[$connection->id] = array(
+				'noun' => $noun->word,
+				'verb' => $verb->word,
+				'category' => $category->word,
+				'user' => $user->username,
+				'time' => RelativeTime::get($connection->updated_at)
+			);
+
+			// $sentences[$connection->id]
+			// $sentences[$connection->id]['sentence'] = '<span class="text-info">' . $noun->word . '</span> is a <span class="text-warning">' . $category->word . '</span> that ' . $user->username . ' has <span class="text-error">' . $verb->word . '</span>.';
+			// $sentences[$connection->id]['time'] = RelativeTime::get($connection->updated_at);
 		}
 
 		$categories = DB::query('select word, count(*) as word_count 
@@ -59,13 +47,33 @@ class Home_Controller extends Base_Controller {
 							group by word 
 							order by word_count desc 
 							limit 3');
+		
+		$cat_chart = array(array('Categories', 'Count'));
+
+		foreach ($categories as $category) {
+			array_push($cat_chart, array($category->word, $category->word_count));
+		}
+
+		$verb_chart = array(array('Verbs', 'Count'));
+
+		foreach ($verbs as $verb) {
+			array_push($verb_chart, array($verb->word, $verb->word_count));
+		}
+		
+		$noun_chart = array(array('Nouns', 'Count'));
+
+		foreach ($nouns as $noun) {
+			array_push($noun_chart, array($noun->word, $noun->word_count));
+		}
+
+
 
 		return View::make('home.index')
 			->with('title', 'Accomplishments - Home')
 			->with('sentences', $sentences)
-			->with('categories', $categories)
-			->with('verbs', $verbs)
-			->with('nouns', $nouns);
+			->with('categories', $cat_chart)
+			->with('verbs', $verb_chart)
+			->with('nouns', $noun_chart);
 	}
 
 }

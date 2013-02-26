@@ -6,7 +6,7 @@
 	<title>{{ $title }}</title>
 	<meta name="viewport" content="width=device-width">
 	{{ HTML::style('css/bootstrap.css') }}
-	{{ HTML::script('https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js') }}
+	{{ HTML::script('js/jquery.min.js') }}
 	<style type="text/css">
 	form {
 		margin-bottom: 0;
@@ -14,6 +14,42 @@
 	h2 {
 		margin: 0;
 	}
+	.center {
+		text-align: center;
+		display: block;
+		margin: 0 auto;
+	}
+	.margins {
+		padding-left: 20px;
+	}
+	
+	#buttons {
+		text-align: center;
+		padding: 50px;
+	}
+
+	.butt {
+		padding: 40px;
+	}
+
+	#footer {
+		text-align: center;
+	}
+
+	.form-center {
+		text-align: center;
+	}
+
+	#graph {
+		padding: 0;
+	}
+
+	html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0px;
+}
+
 	</style>
 
 </head>
@@ -65,4 +101,14 @@
 	</div><!-- end container -->
 
 </body>
+<script type="text/javascript">
+$('.navbar li').click(function(e) {
+$('.navbar li').removeClass('active');
+var $this = $(this);
+if (!$this.hasClass('active')) {
+$this.addClass('active');
+}
+//e.preventDefault();
+});
+</script>
 </html>

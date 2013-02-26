@@ -1,7 +1,7 @@
 @layout('layouts.default')
 
 @section('content')
-	<h1>Register</h1>
+	<div class="container">
 
 	@if($errors->has())
 		<p>The following errors have occurred:</p>
@@ -13,26 +13,42 @@
 		</ul>
 	@endif
 
-	{{ Form::open('register', 'POST') }}
+	{{ Form::open('register', 'POST', array('class' => 'form-horizontal')) }}
+
+	<div class="control-group">
+	<div class="controls">
+	<legend>Register</legend>
+	</div>
+	</div>
 
 	{{ Form::token() }}
-
-	<p>
-		{{ Form::label('username', 'Username') }}<br />
+		<div class="control-group">
+		{{ Form::label('username', 'Username', array('class' => 'control-label')) }}
+		<div class="controls">
 		{{ Form::text('username', Input::old('username')) }}
-	</p>
+		</div>
+		</div>
 
-	<p>
-		{{ Form::label('password', 'Password') }}<br />
+		<div class="control-group">
+		{{ Form::label('password', 'Password', array('class' => 'control-label')) }}
+		<div class="controls">
 		{{ Form::password('password') }}
-	</p>
-
-	<p>
-		{{ Form::label('password_confirmation', 'Confirm Password') }}<br />
+		</div>
+		</div>
+	
+		<div class="control-group">
+		{{ Form::label('password_confirmation', 'Confirm Password', array('class' => 'control-label')) }}
+		<div class="controls">
 		{{ Form::password('password_confirmation') }}
-	</p>
-
-	<p>{{ Form::submit('Register') }}</p>
+		</div>
+		</div>
+	
+	<div class="control-group">
+	<div class="controls">
+	{{ Form::button('Register', array('class' => 'btn btn-primary')) }}
+	</div>
+	</div>
 
 	{{ Form::close() }}
+	</div>
 @endsection

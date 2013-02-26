@@ -1,10 +1,15 @@
 @layout('layouts.default')
 
 @section('content')
-	<h1>Login</h1>
+	<div class="container">
 
 	{{ Form::open('login', 'POST', array('class' => 'form-horizontal')) }}
-
+	<fieldset>
+	<div class="control-group">
+	<div class="controls">
+<legend>Login</legend>
+	</div>
+	</div>
 	{{ Form::token() }}
 
 	<div class="control-group">
@@ -23,8 +28,10 @@
 
 	<div class="control-group">
 	<div class="controls">
-	{{ Form::submit('Login') }}</p>
+	{{ Form::button('Login', array('class' => 'btn btn-success')) }}</p>
 	</div>
 	</div>
+	</fieldset>
 	{{ Form::close() }}
+	</div>
 @endsection
