@@ -51,19 +51,19 @@ class Home_Controller extends Base_Controller {
 		$cat_chart = array(array('Categories', 'Count'));
 
 		foreach ($categories as $category) {
-			array_push($cat_chart, array($category->word, $category->word_count));
+			array_push($cat_chart, array($category->word, (int)$category->word_count));
 		}
 
 		$verb_chart = array(array('Verbs', 'Count'));
 
 		foreach ($verbs as $verb) {
-			array_push($verb_chart, array($verb->word, $verb->word_count));
+			array_push($verb_chart, array($verb->word, (int)$verb->word_count));
 		}
 		
 		$noun_chart = array(array('Nouns', 'Count'));
 
 		foreach ($nouns as $noun) {
-			array_push($noun_chart, array($noun->word, $noun->word_count));
+			array_push($noun_chart, array($noun->word, (int)$noun->word_count));
 		}
 
 
