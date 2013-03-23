@@ -44,6 +44,11 @@
 		padding: 0;
 	}
 
+	.form-nodes {
+		padding-left: 90px;
+		padding-top: 2px;
+	}
+
 	html, body {
   width:  100%;
   height: 100%;
@@ -62,6 +67,45 @@
 		<div class="container">
 			<ul class="nav">
 				<li>{{ HTML::link_to_route('home', 'Home') }}</li>
+				<li>{{ HTML::link_to_route('home', 'About') }}</li>
+			
+			@if($title == 'Accomplishments - Your Graph')
+				<li class="form-nodes">
+					{{ Form::open('', 'POST', array('class' => 'form-inline'))}}
+
+						{{ Form:: token() }}
+
+						<span id="noun-control">
+						{{ Form::label('noun','') }}
+						<span id="controls">
+						{{ Form::text('noun','',array('placeholder' => 'noun')) }}
+				        </span>
+				        </span>
+
+						<span id="cat-control">
+						{{ Form::label('category', 'is a') }}
+						<span id="controls">
+						{{ Form::text('category', '', array('placeholder' => 'category')) }}
+						</span>
+				        </span>
+
+						<span id="verb-control">
+						{{ Form::label('verb', 'that I have') }}
+						<span id="controls">
+						{{ Form::text('verb', '', array('placeholder' => 'verbed')) }}
+				 		</span>
+				        </span>
+
+						{{ Form::submit('add', array('class' => 'btn btn-inverse')) }}
+
+						
+
+					{{ Form::close() }}
+
+	             </li>
+	        @endif
+	        </ul>
+			<ul class="nav pull-right">
 				@if(!Auth::check())
 					<li>{{ HTML::link_to_route('register', 'Register') }}</li>
 					<li>{{ HTML::link_to_route('login', 'Login') }}</li>
@@ -69,19 +113,8 @@
 					<li>{{ HTML::link_to_route('graph', "Your Graph") }}</li>
 					<li>{{ HTML::link_to_route('logout', 'Logout ('.Auth::user()->username.')') }}</li>
 				@endif
-		
-				<li>{{ Form::open('search', 'POST', array('class' => 'navbar-search')) }}
-
-				{{ Form::token() }}
-
-				{{ Form::text('keyword', '', array('id'=>'keyword', 'placeholder' => 'Search', 'class' => 'search-query')) }}
-
-				{{ Form::close() }} </li>
-				<li>
-					
-				</li>
 			</ul>
-			<p id="message" class="navbar-text pull-right">
+			<p id="message" class="navbar-text form-center">
 					@if(Session::has('message'))
 						{{ Session::get('message') }}
 					@endif

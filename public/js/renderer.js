@@ -1,16 +1,22 @@
 (function(){
   
   Renderer = function(canvas){
+
+    // Initialize canvas variables
     var dom = $(canvas)
     var canvas = dom.get(0)
     var ctx = canvas.getContext("2d");
-    ctx.canvas.width  = window.innerWidth;
-    ctx.canvas.height = window.innerHeight;
     var gfx = arbor.Graphics(canvas)
     var particleSystem = null
 
+    //Initialize canvas width and height based on browswer window size
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight-$('#nav').height();
+
     var that = {
       init:function(system){
+
+        //Initialize system from main.js
         particleSystem = system
         particleSystem.screenSize(canvas.width, canvas.height) 
         particleSystem.screenPadding(40)
@@ -39,27 +45,25 @@
             label = null
           }
 
+          // Init var for shadow color of collapsed nodes
           var collapse;
 
+          // Setup node attributes based on word-type 
           switch(node.data.type){
               case 'category':
-                  ctx.fillStyle = 'orange';
-                  label = label.pluralize();
+                  ctx.fillStyle = 'green';
                   collapse = 'red';
+                  label = label.pluralize();
                   break;
               case 'verb':
                   ctx.fillStyle = 'red';
                   collapse = 'blue';
                   break;
               case 'noun':
-                  if(particleSystem.getEdgesTo(node).length > 1){
-                      ctx.fillStyle = 'blue'
-                  }else{
-                      ctx.fillStyle = 'blue'
-                  }
+                  ctx.fillStyle = 'blue'
                   break;
               default:
-                  ctx.fillStyle = "green"
+                  ctx.fillStyle = "black"
                   node.fixed = true
           }
           
@@ -81,6 +85,11 @@
                   gfx.oval(pt.x-w/2, pt.y-w/2, w,w, {fill:ctx.fillStyle})
                   nodeBoxes[node.name] = [pt.x-w/2, pt.y-w/2, w+off,w+off]
                   break;
+              case 'me':
+                  // gfx.rect(pt.x-w/2+off, pt.y-10+off, w,20, 4, {fill:shadow})
+                  gfx.rect(pt.x-w, pt.y-20, w*2,40, 4, {fill:ctx.fillStyle})
+                  nodeBoxes[node.name] = [pt.x-w, pt.y-22, w*2+off, 44+off]
+                  break;
               default:
                   gfx.rect(pt.x-w/2+off, pt.y-10+off, w,20, 4, {fill:shadow})
                   gfx.rect(pt.x-w/2, pt.y-10, w,20, 4, {fill:ctx.fillStyle})
@@ -92,7 +101,7 @@
             ctx.textAlign = "center"
             ctx.fillStyle = textColor
             ctx.fillText(label||"", pt.x, pt.y+4)
-            ctx.fillText(label||"", pt.x, pt.y+4)
+            // ctx.fillText(label||"", pt.x, pt.y+4)
           }
         })    			
         // draw the edges
@@ -100,27 +109,20 @@
           // edge: {source:Node, target:Node, length:#, data:{}}
           // pt1:  {x:#, y:#}  source position in screen coords
           // pt2:  {x:#, y:#}  target position in screen coords
-          var weight 
-          var color
+          var weight = 1;
+          var color = 'black';
           
           switch(edge.data.type){
               case 'category':
-                  color = 'orange'
                   weight = 3
                   break;
               case 'verb':
-                  color = 'orange'
                   weight = 2
                   break;
               case 'noun':
-                  color = 'red'
                   var edges = particleSystem.getEdgesTo(edge.target)
-                  if(edges.length > 1) color = 'purple'
-                  weight = 1
+                  if(edges.length > 1) color = 'purple';
                   break;
-              default:
-                  color = 'green'
-                  weight = 1
           }
           
           if (!color || (""+color).match(/^[ \t]*$/)) color = null
@@ -179,22 +181,19 @@
             var pos = $(canvas).offset();
             _mouseP = arbor.Point(e.pageX-pos.left, e.pageY-pos.top);
             nearest = particleSystem.nearest(_mouseP);
-            var edit = $("#edit").prop('checked')
 
             if(!nearest.node){
                 return false;
             }
 
             selected = (nearest.distance < nearest.node.data.radius) ? nearest : null
-            if(selected){
-                dom.addClass('hovered');
-                if(edit===true) particleSystem.tweenNode(nearest.node, 0, {hovered:'y'})
-            } else {
-                dom.removeClass('hovered');
-                particleSystem.tweenNode(nearest.node, 0, {hovered:'n'})
-            }
+            
+            if(selected) dom.addClass('hovered');
+            else dom.removeClass('hovered');
+      
             return false;
           },
+
           down:function(e){
             var pos = $(canvas).offset();
             _mouseP = arbor.Point(e.pageX-pos.left, e.pageY-pos.top)
@@ -226,82 +225,66 @@
           },
 
           dropped:function(e){
-            var edit = $("#edit").prop('checked')
             if (dragged===null || dragged.node===undefined) return
             if (dragged.node !== null) {
                 if(move===0) {
-                    if(edit){
-                        var r = window.confirm("delete?")
-                        if(r == true) {
-                           $.post('/sweetness/ajax/delete',{'node':JSON.stringify(dragged.node)}, 
-                              function(data) {
-                                 if(data == 'deleted'){
+                    if(!dragged.node.data.expanded){
+                        if(dragged.node.data.type !== 'noun'){
+                            dragged.node.data.expanded = true
+                            var nodes = globalData['nodes'][dragged.node.name];
+                            var edges = globalData['edges'][dragged.node.name];
 
-                                 }
-                              }
-                           );
-                        } 
+                            for (var i in nodes) {
+                              particleSystem.addNode(nodes[i].name, nodes[i].data)
+                            }
+
+                            for (var i in edges) {
+                              if (edges[i] !== undefined)
+                                particleSystem.addEdge(edges[i].source.name, edges[i].target.name, edges[i].data)
+                            }
+                        }
                     }
                     else{
-                        if(!dragged.node.data.expanded){
-                            if(dragged.node.data.type !== 'noun'){
-                                dragged.node.data.expanded = true
-                                var nodes = globalData['nodes'][dragged.node.name];
-                                var edges = globalData['edges'][dragged.node.name];
+                        dragged.node.data.expanded = false;
 
-                                for (var i in nodes) {
-                                  particleSystem.addNode(nodes[i].name, nodes[i].data)
+                        var nodes = [];
+                        var edges = [];
+
+                        if(dragged.node.data.type == 'category'){
+                            particleSystem.prune(function(node, from, to){
+                                if(node.name.substring(0, dragged.node.data.label.length) === dragged.node.data.label){ 
+                                    
+                                    nodes[node.name] = node;
+                                    for (var i =0; i<from.from.length; i++) {
+                                      edges[from.from[i]._id] = from.from[i];
+                                    }
+
+                                    for (var i =0; i < from.to.length; i++) {
+                                      edges[from.to[i]._id] = from.to[i];
+                                    } 
+
+                                    return true;
                                 }
+                            })
 
-                                for (var i in edges) {
-                                  if (edges[i] !== undefined)
-                                    particleSystem.addEdge(edges[i].source.name, edges[i].target.name, edges[i].data)
+                        }else if(dragged.node.data.type == 'verb'){
+                            var draggedEdges = particleSystem.getEdgesFrom(dragged.node)
+                            for (var i = 0; i < draggedEdges.length; i++){
+                                var edge = draggedEdges[i]
+                                nodes[edge.target.name] = edge.target;
+                                edges[edge._id] = edge;
+
+                                if(particleSystem.getEdgesTo(edge.target).length == 1){
+                                    particleSystem.pruneNode(edge.target)
+                                }
+                                else{
+                                    particleSystem.pruneEdge(edge)
                                 }
                             }
                         }
-                        else{
-                            dragged.node.data.expanded = false;
 
-                            var nodes = [];
-                            var edges = [];
-
-                            if(dragged.node.data.type == 'category'){
-                                particleSystem.prune(function(node, from, to){
-                                    if(node.name.substring(0, dragged.node.data.label.length) === dragged.node.data.label){ 
-                                        
-                                        nodes[node.name] = node;
-                                        for (var i =0; i<from.from.length; i++) {
-                                          edges[from.from[i]._id] = from.from[i];
-                                        }
-
-                                        for (var i =0; i < from.to.length; i++) {
-                                          edges[from.to[i]._id] = from.to[i];
-                                        } 
-
-                                        return true;
-                                    }
-                                })
-
-                            }else if(dragged.node.data.type == 'verb'){
-                                var draggedEdges = particleSystem.getEdgesFrom(dragged.node)
-                                for (var i = 0; i < draggedEdges.length; i++){
-                                    var edge = draggedEdges[i]
-                                    nodes[edge.target.name] = edge.target;
-                                    edges[edge._id] = edge;
-
-                                    if(particleSystem.getEdgesTo(edge.target).length == 1){
-                                        particleSystem.pruneNode(edge.target)
-                                    }
-                                    else{
-                                        particleSystem.pruneEdge(edge)
-                                    }
-
-                                }
-                            }
-
-                             globalData['nodes'][dragged.node.name] = nodes;                                   
-                             globalData['edges'][dragged.node.name] = edges; 
-                        }
+                        globalData['nodes'][dragged.node.name] = nodes;                                   
+                        globalData['edges'][dragged.node.name] = edges; 
                     }
                 }
                 dragged.node.fixed = false

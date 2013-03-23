@@ -26,10 +26,6 @@ class Home_Controller extends Base_Controller {
 				'user' => $user->username,
 				'time' => RelativeTime::get($connection->updated_at)
 			);
-
-			// $sentences[$connection->id]
-			// $sentences[$connection->id]['sentence'] = '<span class="text-info">' . $noun->word . '</span> is a <span class="text-warning">' . $category->word . '</span> that ' . $user->username . ' has <span class="text-error">' . $verb->word . '</span>.';
-			// $sentences[$connection->id]['time'] = RelativeTime::get($connection->updated_at);
 		}
 
 		$categories = DB::query('select word, count(*) as word_count 

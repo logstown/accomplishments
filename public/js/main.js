@@ -4,7 +4,7 @@ $(document).ready(function(){
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
 
     sys.graft(graph)
-    //sys.pruneNode(user)
+    // sys.pruneNode(user)
 
     $(":submit").click(function(e){
         e.preventDefault();
