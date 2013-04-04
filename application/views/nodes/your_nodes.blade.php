@@ -3,36 +3,14 @@
 @section('content')
 	<script type="text/javascript">
 
-		$('#noun').data('nholder',$('#noun').attr('placeholder'));
-		$('#category').data('cholder',$('#category').attr('placeholder'));
-		$('#verb').data('vholder',$('#verb').attr('placeholder'));
-
-		$('#noun').focusin(function(){
-		    $(this).attr('placeholder','');
-		});
-		$('#noun').focusout(function(){
-		    $(this).attr('placeholder',$(this).data('nholder'));
-		});
-
-		$('#category').focusin(function(){
-		    $(this).attr('placeholder','');
-		});
-		$('#category').focusout(function(){
-		    $(this).attr('placeholder',$(this).data('cholder'));
-		});
-
-		$('#verb').focusin(function(){
-		    $(this).attr('placeholder','');
-		});
-		$('#verb').focusout(function(){
-		    $(this).attr('placeholder',$(this).data('vholder'));
-		});
-
+		//Variable declaration for future scripts
 		var graph = <?php echo json_encode($graph) ?>;
 		var user = "<?php echo htmlspecialchars($username) ?>";
+		
+		// Global data to hold collapsed Nodes' subnodes
 		var globalData = [];
 	    globalData['nodes'] = [];
-	    globalData['edges'] = [];
+	    globalData['edges'] = [];		
 
 	</script>
 
@@ -46,6 +24,6 @@
 		<canvas id="viewport"></canvas>
 	</div>
 	
-	{{ HTML::script('/js/main.js') }}
+	{{ HTML::script('/js/nodes.js') }}
 
 @endsection

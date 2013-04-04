@@ -11,16 +11,4 @@ class User extends Basemodel
 	public function categories() {
 		return $this->has_many('Category');
 	}
-
-	// public function categories() {
-	// 	return $this->has_many('Category');
-	// }
-
-	// public function verbs() {
-	// 	return $this->has_many('Verb');
-	// }
-
-	// public function nouns() {
-	// 	return $this->has_many('Noun');
-	// }
 }

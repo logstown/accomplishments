@@ -14,6 +14,8 @@ class Category extends Basemodel
 		return $this->has_many('Verb');
 	}
 
+	// IN: noun string
+	// OUT: Noun object if found. NULL if not.
 	public function get_noun($n_word) {
 		$verbs = $this->verbs;
 
@@ -25,9 +27,5 @@ class Category extends Basemodel
 		}
 
 		return $noun;
-	}
-
-	public static function your_categories() {
-		return static::where('user_id','=',Auth::user()->id)->paginate(3);
 	}
 }

@@ -8,8 +8,28 @@ class Home_Controller extends Base_Controller {
 		$this->filter('before', 'auth')->only(array('action_things'));
 	}
 
-	public function get_things()
+	// Gets most recent sentences and the most frequent Categories, Verbs, and Nouns
+	public function get_stats()
 	{
+		return View::make('home.index')
+			->with('title', 'Accomplishments - Home')
+			->with('sentences', $this->sentences())
+			->with('categories', $this->chart('categories'))
+			->with('verbs', $this->chart('verbs'))
+			->with('nouns', $this->chart('nouns'));
+	}
+
+	// Static about page
+	public function get_about()
+	{
+		return View::make('static.about')->with('title', 'Accomplishments - About');
+	}
+
+	// In: N/A
+	// Out: An array of the top 5 user-created sentences and the time created.
+	private function sentences()
+	{
+		// 5 Most recent sentences taken from most recent connection from verb to noun
 		$connections = DB::table('noun_verb')->order_by('created_at', 'DESC')->take(5)->get();
 
 		$sentences = array();
@@ -28,48 +48,27 @@ class Home_Controller extends Base_Controller {
 			);
 		}
 
-		$categories = DB::query('select word, count(*) as word_count 
-								from categories 
+		return $sentences;
+	}
+
+	// In: type of word in sentence
+	// Out: a table of the top 3 most frequently used words and their counts.
+	private function chart($type)
+	{
+		// Get most frequent words
+		$top_words = DB::query('select word, count(*) as word_count 
+								from ' . $type . '
 								group by word 
 								order by word_count desc 
 								limit 3');
-		$verbs = DB::query('select word, count(*) as word_count 
-							from verbs 
-							group by word 
-							order by word_count desc 
-							limit 3');
-		$nouns = DB::query('select word, count(*) as word_count 
-							from nouns 
-							group by word 
-							order by word_count desc 
-							limit 3');
-		
-		$cat_chart = array(array('Categories', 'Count'));
 
-		foreach ($categories as $category) {
-			array_push($cat_chart, array($category->word, (int)$category->word_count));
-		}
+		// Format for table output
+		$chart = array(array(ucfirst($type), 'Count'));
 
-		$verb_chart = array(array('Verbs', 'Count'));
+		foreach ($top_words as $top_word) 
+			array_push($chart, array($top_word->word, (int)$top_word->word_count));
 
-		foreach ($verbs as $verb) {
-			array_push($verb_chart, array($verb->word, (int)$verb->word_count));
-		}
-		
-		$noun_chart = array(array('Nouns', 'Count'));
-
-		foreach ($nouns as $noun) {
-			array_push($noun_chart, array($noun->word, (int)$noun->word_count));
-		}
-
-
-
-		return View::make('home.index')
-			->with('title', 'Accomplishments - Home')
-			->with('sentences', $sentences)
-			->with('categories', $cat_chart)
-			->with('verbs', $verb_chart)
-			->with('nouns', $noun_chart);
+		return $chart;
 	}
 
 }

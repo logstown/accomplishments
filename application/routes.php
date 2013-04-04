@@ -1,16 +1,16 @@
 <?php
 
-// user Resource
-Route::get('/', array('as'=>'home', 'uses'=>'home@things'));
-Route::get('about', function()
-{
-	return View::make('static.about')->with('title', 'Accomplishments - About');
-});
+// home and static
+Route::get('/', array('as'=>'home', 'uses'=>'home@stats'));
+Route::get('about', array('as' => 'about', 'uses' => 'home@about'));
+
+// GET
 Route::get('graph', array('as' => 'graph', 'uses' => 'nodes@graph'));
 Route::get('register', array('as' => 'register', 'uses' => 'users@new'));
 Route::get('login', array('as'=>'login', 'uses'=>'users@login'));
 Route::get('logout', array('as'=>'logout', 'uses'=>'users@logout'));
 
+// POST
 Route::post('register', array('before'=>'csrf', 'uses'=>'users@create'));
 Route::post('graph', array('before'=>'csrf', 'uses'=>'nodes@add'));
 Route::post('login', array('before'=>'csrf', 'uses'=>'users@login'));
@@ -18,7 +18,7 @@ Route::post('add', array('before'=>'csrf', 'uses'=>'nodes@add'));
 
 
 
-
+// Boilerplate stuff
 Event::listen('404', function()
 {
 	return Response::error('404');

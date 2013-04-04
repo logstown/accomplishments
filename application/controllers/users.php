@@ -2,14 +2,16 @@
 
 class Users_Controller extends Base_Controller {
 
-	public $restful = true;    
+	public $restful = true; 
 
+    // Register View
 	public function get_new()
     {
         return View::make('users.new')
             ->with('title', 'Register');
     }    
 
+    // Creates new user and logs them in to 'Home'view or redirects back if errors
 	public function post_create()
     {
         $validation = User::validate(Input::all());
@@ -24,17 +26,19 @@ class Users_Controller extends Base_Controller {
             Auth::login($user->id);
 
             return Redirect::to_route('home')
-                ->with('message', 'Thanks for registering. Your are now logged in!');
+                ->with('message', 'Thanks for registering '. $user->username . '! Your are now logged in.');
         } else {
             return Redirect::to_route('register')->with_errors($validation)->with_input();
         }
     }    
 
+    // Log in View
 	public function get_login() {
         return View::make('users.login')
             ->with('title', 'Accomplishments - Login');
     }
 
+    // Logs user in and redirects to their grapsh
     public function post_login() {
         $user = array(
             'username'=>Input::get('username'),
@@ -50,6 +54,7 @@ class Users_Controller extends Base_Controller {
         }
     }
 
+    // Logs user out and redirects to Log in View
     public function get_logout() {
         if (Auth::check()) {
             Auth::logout();
@@ -58,9 +63,4 @@ class Users_Controller extends Base_Controller {
             return Redirect::to_route('home');
         }
     }
-
-    public function post_add() {
-        return Redirect::to_route('home');
-    }
-
 }

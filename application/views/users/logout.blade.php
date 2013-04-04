@@ -1,1 +1,0 @@
-This is the /Users/loganjoecks/Sites/accomplishments/application/views/user/logout.blade.php view

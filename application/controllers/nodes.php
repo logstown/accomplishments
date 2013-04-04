@@ -8,6 +8,7 @@ class Nodes_Controller extends Base_Controller {
 		$this->filter('before', 'auth')->only(array('graph'));
 	}
 
+    // Sends graph and username to 'nodes' view
 	public function get_graph()
     {
     	return View::make('nodes.your_nodes')
@@ -16,6 +17,7 @@ class Nodes_Controller extends Base_Controller {
     		->with('graph', $this->graph_out());
     }
 
+    // Add Sentence to graph (AJAX call)
     public function post_add()
     {
     	$category = Input::get('category');
@@ -27,6 +29,8 @@ class Nodes_Controller extends Base_Controller {
     	echo $message;
     }
 
+    // IN: category, verb, and noun from user input
+    // OUT: Message indicating success of add
     private function add_nodes($c_word, $v_word, $n_word)
 	{
 		$user = Auth::user();
@@ -45,6 +49,8 @@ class Nodes_Controller extends Base_Controller {
 			$verb = $category->verbs()->insert($verb);	
 		}
 
+        // Checks if user-entered noun already exists beneath category
+        // (checks multiple verbs)
 		$noun = $category->get_noun($n_word);
 
 		if (!$noun) {
@@ -65,6 +71,8 @@ class Nodes_Controller extends Base_Controller {
 			return 'failed';
 	}
 
+    // IN: N/A
+    // OUT: An array of nodes and edges that will be converted to JSON
 	private function graph_out() {
 		$nodes = array();
         $edges = array();
@@ -74,13 +82,13 @@ class Nodes_Controller extends Base_Controller {
         
         $nodes[$username] = array(
             'label' => $username,
-            'type' => 'me',
-            'hovered' => 'n',
+            'type' => 'user',
             'expanded' => true
-        );
-        
-        $categories = $user->categories;
-        $edges[$username] = array();
+        );        
+
+        if($categories = $user->categories) {
+            $edges[$username] = array();
+        }
 
         foreach($categories as $category){
         	$cat_unique = $username . "_" . $category->word;
@@ -88,7 +96,6 @@ class Nodes_Controller extends Base_Controller {
         	$nodes[$cat_unique] = array(
                 'type' => 'category',
                 'label' => $category->word,
-                'hovered' => 'n',
                 'expanded' => true
             );
                             
@@ -103,7 +110,6 @@ class Nodes_Controller extends Base_Controller {
                 $nodes[$verb_unique] = array(
                     'type' => 'verb',
                     'label' => $verb->word,
-                    'hovered' => 'n',
                     'expanded' => true
                 );
                 
@@ -118,7 +124,6 @@ class Nodes_Controller extends Base_Controller {
                     $nodes[$noun_unique] = array(
                         'type' => 'noun',
                         'label' => $noun->word,
-                        'hovered' => 'n',
                         'expanded' => true
                     );
                     

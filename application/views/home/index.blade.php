@@ -2,7 +2,7 @@
 
 @section('content')
 
-  <div class="row-fluid">
+  <div class="row-fluid content">
     <div class="span7 margins">
       <h1 class="form-center">Welcome to Accomplishments!</h1>
       @if(Auth::check())
@@ -26,18 +26,18 @@
 
     <div class="span5">
       <table class="table table-striped">
-        <caption>Recent Sentences added...</caption>
+        <caption><h3>Recent Sentences added...</h3></caption>
         <tbody>
           @foreach($sentences as $sentence)
             <tr>
               <td>
                 <span class="text-info">{{ ucfirst($sentence['noun']) }}</span>
                 is a
-                <span class="text-warning">{{ $sentence['category'] }}</span>
+                <span class="text-error">{{ $sentence['category'] }}</span>
                 that
                 <strong>{{ $sentence['user'] }}</strong>
                 has
-                <span class="text-error">{{ $sentence['verb'] }}</span>.
+                <span class="text-success">{{ $sentence['verb'] }}</span>.
               </td>
               <td>
                 <em>{{$sentence['time']}}</em>
@@ -72,6 +72,7 @@
                     width:500, height:200,
                 	  legend: 'none',
                 	  colors: ['yellow'],
+                    backgroundColor: 'none',
                 	  hAxis: { textPosition: 'none', gridlines: {count: 2} }}
               );
           new google.visualization.BarChart(document.getElementById('verbs')).
@@ -80,6 +81,7 @@
                     width:500, height:200,
                 	  legend: 'none',
                 	  colors: ['red'],
+                    backgroundColor: 'none',
                 	  hAxis: { textPosition: 'none', gridlines: {count: 2} }}
               );
   		    new google.visualization.BarChart(document.getElementById('nouns')).
@@ -88,15 +90,17 @@
                     width:500, height:200,
                 	  legend: 'none',
                 	  colors: ['blue'],
+                    backgroundColor: 'none',
                 	  hAxis: { textPosition: 'none', gridlines: {count: 2} }}
               );
         }
         google.setOnLoadCallback(drawVisualization);
       </script>
-
+      <div id="charts">
       <div id="categories" class="center" style="width: 500px; height: 200px;"></div>
       <div id="verbs" class="center"style="width: 500px; height: 200px;"></div>
       <div id="nouns" class="center" style="width: 500px; height: 200px;"></div>
+      </div>
     </div>
   </div>
 

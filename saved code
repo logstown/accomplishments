@@ -29,3 +29,20 @@
 
 				{{ Form::close() }}
 			</div><!-- end searchbar -->
+
+
+			<p id="message" class="navbar-text form-center">
+					@if(Session::has('message'))
+						{{ Session::get('message') }}
+					@endif
+			</p>
+
+			@if(Session::has('message'))
+	<script type="text/javascript">
+		$('#message').fadeIn();
+	</script>
+@endif
+
+#message {
+	visibility: hidden;
+}
