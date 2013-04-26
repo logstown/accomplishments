@@ -5,7 +5,7 @@
 
 <div class="container">
 	<br>
-	<p> 'Accomplishments allows you to graph your various accomplishments in an intuitive and expressive way, using the {{ HTML::link('http://arborjs.org', 'arbor.js')}} visulization library.</p>
+	<p> <strong> Accomplishments </strong> allows you to graph your various accomplishments in an intuitive and expressive way, using the {{ HTML::link('http://arborjs.org', 'arbor.js')}} visualization library.</p>
 	<br>
 	@if(Auth::check())
 		<p>{{ HTML::link_to_route('graph', "Create your graph now") }}</p>
